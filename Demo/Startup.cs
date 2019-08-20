@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hei.Captcha.DI;
+using DUWENINK.Captcha.DI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +26,7 @@ namespace Demo
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMemoryCache();//使用缓存 
-            services.AddHeiCaptcha();//使用验证码
+            services.AddDUWENINKCaptcha();//使用验证码
 
 
 

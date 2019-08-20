@@ -8,9 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Hei.Captcha.Interfaces;
+using DUWENINK.Captcha.Extensions;
+using DUWENINK.Captcha.Interfaces;
 
-namespace Hei.Captcha.Services
+namespace DUWENINK.Captcha.Services
 {
     /// <summary>
     /// 验证码配置和逻辑

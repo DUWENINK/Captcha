@@ -1,13 +1,13 @@
-﻿using SixLabors.Fonts;
+﻿using System;
+using System.Collections.Generic;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using SixLabors.Shapes;
-using System;
-using System.Collections.Generic;
 
-namespace Hei.Captcha
+namespace DUWENINK.Captcha.Extensions
 {
     public static class ImageSharpExtension
     {
@@ -64,35 +64,33 @@ namespace Hei.Captcha
         {
             return processingContext.Apply(img =>
             {
-                if (string.IsNullOrEmpty(text) == false)
+                if (string.IsNullOrEmpty(text)) return;
+                Random random = new Random();
+                var textWidth = (img.Width / text.Length);
+                var img2Size = Math.Min(textWidth, img.Height);
+                var fontMiniSize = (int)(img2Size * 0.9);
+                var fontMaxSize = (int)(img2Size * 1.37);
+                Array fontStyleArr = Enum.GetValues(typeof(FontStyle));
+
+                for (int i = 0; i < text.Length; i++)
                 {
-                    Random random = new Random();
-                    var textWidth = (img.Width / text.Length);
-                    var img2Size = Math.Min(textWidth, img.Height);
-                    var fontMiniSize = (int)(img2Size * 0.9);
-                    var fontMaxSize = (int)(img2Size * 1.37);
-                    Array fontStyleArr = Enum.GetValues(typeof(FontStyle));
-
-                    for (int i = 0; i < text.Length; i++)
+                    using (Image<Rgba32> img2 = new Image<Rgba32>(img2Size, img2Size))
                     {
-                        using (Image<Rgba32> img2 = new Image<Rgba32>(img2Size, img2Size))
+                        Font scaledFont = new Font(fonts[random.Next(0, fonts.Length)], random.Next(fontMiniSize, fontMaxSize), (FontStyle)fontStyleArr.GetValue(random.Next(fontStyleArr.Length)));
+                        var point = new Point(i * textWidth, (containerHeight - img2.Height) / 2);
+                        var colorHex = colorHexArr[random.Next(0, colorHexArr.Length)];
+                        var textGraphicsOptions = new TextGraphicsOptions(true)
                         {
-                            Font scaledFont = new Font(fonts[random.Next(0, fonts.Length)], random.Next(fontMiniSize, fontMaxSize), (FontStyle)fontStyleArr.GetValue(random.Next(fontStyleArr.Length)));
-                            var point = new Point(i * textWidth, (containerHeight - img2.Height) / 2);
-                            var colorHex = colorHexArr[random.Next(0, colorHexArr.Length)];
-                            var textGraphicsOptions = new TextGraphicsOptions(true)
-                            {
-                                HorizontalAlignment = HorizontalAlignment.Left,
-                                VerticalAlignment = VerticalAlignment.Top
-                            };
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Top
+                        };
 
-                            img2.Mutate(ctx => ctx
-                                            .DrawText(textGraphicsOptions, text[i].ToString(), scaledFont, Rgba32.FromHex(colorHex), new Point(0, 0))
-                                            .DrawingGrid(containerWidth, containerHeight, Rgba32.FromHex(colorHex), 6, 1)
-                                            .Rotate(random.Next(-45, 45))
-                                        );
-                            img.Mutate(ctx => ctx.DrawImage(img2, point, 1));
-                        }
+                        img2.Mutate(ctx => ctx
+                            .DrawText(textGraphicsOptions, text[i].ToString(), scaledFont, Rgba32.FromHex(colorHex), new Point(0, 0))
+                            .DrawingGrid(containerWidth, containerHeight, Rgba32.FromHex(colorHex), 6, 1)
+                            .Rotate(random.Next(-45, 45))
+                        );
+                        img.Mutate(ctx => { ctx.DrawImage(img2, point, 1); });
                     }
                 }
             });
@@ -117,28 +115,18 @@ namespace Hei.Captcha
             return processingContext.Apply(img =>
             {
                 EllipsePolygon ep = null;
-                Random random = new Random();
-                PointF tempPoint = new PointF();
-                List<PointF> points = new List<PointF>();
+                var random = new Random();
+                var points = new List<PointF>();
 
-                if (count > 0)
+                if (count <= 0) return;
+                for (var i = 0; i < count; i++)
                 {
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (canOverlap)
-                        {
-                            tempPoint = new PointF(random.Next(0, containerWidth), random.Next(0, containerHeight));
-                        }
-                        else
-                        {
-                            tempPoint = getCirclePoginF(containerWidth, containerHeight, (miniR + maxR), ref points);
-                        }
-                        ep = new EllipsePolygon(tempPoint, random.Next(miniR, maxR));
+                    var tempPoint = canOverlap ? new PointF(random.Next(0, containerWidth), random.Next(0, containerHeight)) : GetCirclePoginF(containerWidth, containerHeight, (miniR + maxR), ref points);
+                    ep = new EllipsePolygon(tempPoint, random.Next(miniR, maxR));
 
-                        img.Mutate(ctx => ctx
-                                      .Draw(color, (float)(random.Next(94, 145) / 100.0), ep.Clip())
-                                  );
-                    }
+                    img.Mutate(ctx => ctx
+                        .Draw(color, (float)(random.Next(94, 145) / 100.0), ep.Clip())
+                    );
                 }
             });
         }
@@ -161,7 +149,7 @@ namespace Hei.Captcha
                 var points = new List<PointF> { new PointF(0, 0) };
                 for (int i = 0; i < count; i++)
                 {
-                    getCirclePoginF(containerWidth, containerHeight, 9, ref points);
+                    GetCirclePoginF(containerWidth, containerHeight, 9, ref points);
                 }
                 points.Add(new PointF(containerWidth, containerHeight));
                 img.Mutate(ctx => ctx
@@ -178,33 +166,29 @@ namespace Hei.Captcha
         /// <param name="lapR"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        private static PointF getCirclePoginF(int containerWidth, int containerHeight, double lapR, ref List<PointF> list)
+        private static PointF GetCirclePoginF(int containerWidth, int containerHeight, double lapR, ref List<PointF> list)
         {
-            Random random = new Random();
-            PointF newPoint = new PointF();
-            int retryTimes = 10;
-            double tempDistance = 0;
+            var random = new Random();
+            var newPoint = new PointF();
+            var retryTimes = 10;
 
             do
             {
                 newPoint.X = random.Next(0, containerWidth);
                 newPoint.Y = random.Next(0, containerHeight);
-                bool tooClose = false;
+                var tooClose = false;
                 foreach (var p in list)
                 {
                     tooClose = false;
-                    tempDistance = Math.Sqrt((Math.Pow((p.X - newPoint.X), 2) + Math.Pow((p.Y - newPoint.Y), 2)));
-                    if (tempDistance < lapR)
-                    {
-                        tooClose = true;
-                        break;
-                    }
-                }
-                if (tooClose == false)
-                {
-                    list.Add(newPoint);
+                    var tempDistance = Math.Sqrt((Math.Pow((p.X - newPoint.X), 2) + Math.Pow((p.Y - newPoint.Y), 2)));
+                    if (!(tempDistance < lapR)) continue;
+                    tooClose = true;
                     break;
                 }
+
+                if (tooClose != false) continue;
+                list.Add(newPoint);
+                break;
             }
             while (retryTimes-- > 0);
 

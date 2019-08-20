@@ -1,8 +1,8 @@
 ﻿using System;
 using Demo.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Hei.Captcha;
-using Hei.Captcha.Services;
+using DUWENINK.Captcha;
+using DUWENINK.Captcha.Services;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Demo

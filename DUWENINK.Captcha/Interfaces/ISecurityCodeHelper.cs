@@ -12,10 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Hei.Captcha.Interfaces
+namespace DUWENINK.Captcha.Interfaces
 {
     /// <summary>
-    /// 命名空间： Hei.Captcha.Interfaces
+    /// 命名空间： DUWENINK.Captcha.Interfaces
     /// 创建者：   DUWENINK
     /// 创建日期： 2019/8/2 11:50:52
     /// 类名：     ISecurityCodeHelper

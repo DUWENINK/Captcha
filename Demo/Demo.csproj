@@ -6,12 +6,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hei.Captcha\Hei.Captcha.csproj" />
+    <ProjectReference Include="..\DUWENINK.Captcha\DUWENINK.Captcha.csproj" />
+    <ProjectReference Include="..\Hei.Captcha\DUWENINK.Captcha.csproj" />
   </ItemGroup>
 
 </Project>

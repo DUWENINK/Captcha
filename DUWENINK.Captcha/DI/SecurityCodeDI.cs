@@ -11,16 +11,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Hei.Captcha.Interfaces;
-using Hei.Captcha.Services;
+using DUWENINK.Captcha.Interfaces;
+using DUWENINK.Captcha.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 
-namespace Hei.Captcha.DI
+namespace DUWENINK.Captcha.DI
 {
     /// <summary>
-    /// 命名空间： Hei.Captcha.DI
+    /// 命名空间： DUWENINK.Captcha.DI
     /// 创建者：   DUWENINK
     /// 创建日期： 2019/8/2 11:52:28
     /// 类名：     SecurityCodeDI
@@ -32,7 +32,7 @@ namespace Hei.Captcha.DI
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddHeiCaptcha(this IServiceCollection services)
+        public static IServiceCollection AddDUWENINKCaptcha(this IServiceCollection services)
         {
             if (services == null)
             {
