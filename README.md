@@ -1,12 +1,7 @@
 
+# 项目基于 [Hei.Captcha](https://github.com/gebiWangshushu/Hei.Captcha) 为 [Hei.Captcha](https://github.com/gebiWangshushu/Hei.Captcha) 的依赖注入版本
 
-
-
-# Hei.Captcha
-
-一个.net core，跨平台的验证码生成工具包，基于[ImageSharp](https://github.com/SixLabors/ImageSharp)。
-
-
+# 示例
 
 ## 中文泡泡验证码
 
@@ -40,7 +35,7 @@
 
 
 
-## 使用
+# 如何使用
 
 ```
 Install-Package Hei.Captcha
