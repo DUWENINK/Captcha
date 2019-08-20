@@ -41,12 +41,11 @@
 ```
 Install-Package DUWENINK.Captcha
 ```
-**添加注入(在 StartUp.cs 文件的 ![public void ConfigureServices(IServiceCollection services)](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.conventionbasedstartup.configureservices?view=aspnetcore-2.2) 方法中)**
+**添加注入(在 StartUp.cs 文件的 [public void ConfigureServices(IServiceCollection services)](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.conventionbasedstartup.configureservices?view=aspnetcore-2.2) 方法中)**
 
-``` 
-
-``` 
+```
 services.AddDUWENINKCaptcha();//使用验证码
+```
 
 ```
 /// <summary>
