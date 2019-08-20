@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DUWENINK.Captcha\DUWENINK.Captcha.csproj" />
-    <ProjectReference Include="..\Hei.Captcha\DUWENINK.Captcha.csproj" />
   </ItemGroup>
 
 </Project>

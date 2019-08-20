@@ -10,6 +10,7 @@
 //----------------------------------------------------------------*/
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Demo.Dtos
@@ -25,10 +26,12 @@ namespace Demo.Dtos
         /// <summary>
         /// 浏览器的cookie 
         /// </summary>
+        [Required]
         public string ValidatecodeFromCookie { get;  set; }
         /// <summary>
         /// 用户输入的值
         /// </summary>
+        [Required]
         public string TextByUser { get; set; }
     }
 }

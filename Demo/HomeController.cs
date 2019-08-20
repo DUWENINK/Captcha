@@ -27,10 +27,12 @@ namespace Demo
             return View();
         }
 
+        #region 生成验证码
         /// <summary>
         /// 泡泡中文验证码 
         /// </summary>
         /// <returns></returns>
+        [HttpPost("BubbleCode")]
         public IActionResult BubbleCode()
         {
             var code = _securityCode.GetRandomCnText(2);//生成的中文验证码
@@ -46,6 +48,7 @@ namespace Demo
         /// 数字字母组合验证码
         /// </summary>
         /// <returns></returns>
+        [HttpPost("HybridCode")]
         public IActionResult HybridCode()
         {
             var code = _securityCode.GetRandomEnDigitalText(4);
@@ -57,6 +60,7 @@ namespace Demo
             return File(imgbyte, "image/png");
         }
 
+        #endregion
 
         #region 验证验证码
         /// <summary>
@@ -64,10 +68,10 @@ namespace Demo
         /// </summary>
         /// <returns></returns>
         [HttpPost("VerifyCode")]
-        public IActionResult VerifyCode([FromBody]ValidatecodeDto filter)
+        public NormalResult<bool> VerifyCode([FromBody]ValidatecodeDto filter)
         {
             _cache.TryGetValue(filter.ValidatecodeFromCookie, out string value);
-            return Json(string.Equals(value, filter.TextByUser, StringComparison.OrdinalIgnoreCase));
+            return new NormalResult<bool> { Data = string.Equals(value, filter.TextByUser, StringComparison.OrdinalIgnoreCase) };
         }
 
         #endregion
