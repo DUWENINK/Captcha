@@ -1,27 +1,27 @@
 ﻿using System;
 using Demo.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using DUWENINK.Captcha;
-using DUWENINK.Captcha.Services;
+using DUWENINK.Captcha.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Demo
 {
+    [Route("Home")]
     public class HomeController : Controller
     {
         /// <summary>
         /// 依赖注入
         /// </summary>
-        private SecurityCodeHelper _securityCode ;
+        private ISecurityCodeHelper _securityCode ;
 
         private readonly IMemoryCache _cache;
-        public HomeController(SecurityCodeHelper securityCode, IMemoryCache cache)
+        public HomeController(ISecurityCodeHelper securityCode, IMemoryCache cache)
         {
             _securityCode = securityCode;
             _cache = cache;
         }
 
-
+        [HttpGet("Index")]
         public IActionResult Index()
         {
             return View();
@@ -32,7 +32,7 @@ namespace Demo
         /// 泡泡中文验证码 
         /// </summary>
         /// <returns></returns>
-        [HttpPost("BubbleCode")]
+        [HttpGet("BubbleCode")]
         public IActionResult BubbleCode()
         {
             var code = _securityCode.GetRandomCnText(2);//生成的中文验证码
@@ -48,7 +48,7 @@ namespace Demo
         /// 数字字母组合验证码
         /// </summary>
         /// <returns></returns>
-        [HttpPost("HybridCode")]
+        [HttpGet("HybridCode")]
         public IActionResult HybridCode()
         {
             var code = _securityCode.GetRandomEnDigitalText(4);

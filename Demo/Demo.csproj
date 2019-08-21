@@ -14,4 +14,8 @@
     <ProjectReference Include="..\DUWENINK.Captcha\DUWENINK.Captcha.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
 </Project>
