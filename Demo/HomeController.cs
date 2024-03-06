@@ -7,19 +7,14 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Demo
 {
     [Route("Home")]
-    public class HomeController : Controller
+    public class HomeController(ISecurityCodeHelper securityCode, IMemoryCache cache) : Controller
     {
         /// <summary>
         /// 依赖注入
         /// </summary>
-        private ISecurityCodeHelper _securityCode ;
+        private readonly ISecurityCodeHelper _securityCode = securityCode;
 
-        private readonly IMemoryCache _cache;
-        public HomeController(ISecurityCodeHelper securityCode, IMemoryCache cache)
-        {
-            _securityCode = securityCode;
-            _cache = cache;
-        }
+        private readonly IMemoryCache _cache = cache;
 
         [HttpGet("Index")]
         public IActionResult Index()

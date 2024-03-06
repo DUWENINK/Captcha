@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using DUWENINK.Captcha.Extensions;
 using DUWENINK.Captcha.Interfaces;
+using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace DUWENINK.Captcha.Services
 {
@@ -53,7 +54,9 @@ namespace DUWENINK.Captcha.Services
         /// <summary>
         /// 字体池
         /// </summary>
-        private static Font[] _fontArr;
+       // private static Font[] _fontArr;
+
+        private static Font _textFont;
 
         public SecurityCodeHelper()
         {
@@ -114,35 +117,48 @@ namespace DUWENINK.Captcha.Services
         /// <returns>验证码图片字节数组</returns>
         public byte[] GetBubbleCodeByte(string text)
         {
-            using (Image<Rgba32> img = new Image<Rgba32>(_imageWidth, _imageHeight))
+            using Image<Rgba32> img = new(_imageWidth, _imageHeight);
+            
+
+            var colorCircleHex = _colorHexArr[_random.Next(0, _colorHexArr.Length)];
+            var colorTextHex = colorCircleHex;
+
+            if (_random.Next(0, 6) == 3)
             {
-                Font textFont = _fontArr.FirstOrDefault(c => "STCAIYUN".Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
-                if (textFont==null)
-                {
-                    textFont = _fontArr[_random.Next(0,_fontArr.Length)];
-                }
-
-                var colorCircleHex = _colorHexArr[_random.Next(0, _colorHexArr.Length)];
-                var colorTextHex = colorCircleHex;
-
-                if (_random.Next(0, 6) == 3)
-                {
-                    colorCircleHex = "#FFFFFF";//白色
-                    _circleCount = (int)(_circleCount * 2.65);
-                }
-
-                img.Mutate(ctx => ctx
-                        .Fill(Rgba32.White)
-                        .DrawingCnText(_imageWidth, _imageHeight, text, Rgba32.FromHex(colorTextHex), textFont)
-                        .DrawingCircles(_imageWidth, _imageHeight, _circleCount, _miniCircleR, _maxCircleR, Rgba32.FromHex(colorCircleHex))
-                    );
-
-                using (var ms = new MemoryStream())
-                {                     
-                    img.Save(ms, PngFormat.Instance);
-                    return ms.ToArray();
-                }
+                colorCircleHex = "#FFFFFF";//白色
+                _circleCount = (int)(_circleCount * 2.65);
             }
+            var white = new Rgba32(255, 255, 255); // 创建白色
+
+            img.Mutate(ctx => ctx
+                    .Fill(white)
+                    .DrawingCnText(_imageWidth, _imageHeight, text, ParseHexColor(colorTextHex), _textFont)
+                    .DrawingCircles(_imageWidth, _imageHeight, _circleCount, _miniCircleR, _maxCircleR, ParseHexColor(colorCircleHex))
+                );
+
+            using var ms = new MemoryStream();
+            img.Save(ms, PngFormat.Instance);
+            return ms.ToArray();
+        }
+
+        public static Rgba32 ParseHexColor(string hexColor)
+        {
+            // 移除颜色字符串中可能存在的'#'字符
+            hexColor = hexColor.TrimStart('#');
+
+            // 解析R, G, B 值
+            byte r = Convert.ToByte(hexColor.Substring(0, 2), 16);
+            byte g = Convert.ToByte(hexColor.Substring(2, 2), 16);
+            byte b = Convert.ToByte(hexColor.Substring(4, 2), 16);
+            byte a = 255; // 默认不透明
+
+            // 如果提供了Alpha值，则解析Alpha值
+            if (hexColor.Length == 8)
+            {
+                a = Convert.ToByte(hexColor.Substring(6, 2), 16);
+            }
+
+            return new Rgba32(r, g, b, a);
         }
 
         /// <summary>
@@ -152,25 +168,24 @@ namespace DUWENINK.Captcha.Services
         /// <returns>验证码图片字节数组</returns>
         public byte[] GetEnDigitalCodeByte(string text)
         {
-            using (Image<Rgba32> img = new Image<Rgba32>(_imageWidth, _imageHeight))
+            using Image<Rgba32> img = new(_imageWidth, _imageHeight);
+            var colorTextHex = _colorHexArr[_random.Next(0, _colorHexArr.Length)];
+            var lignthColorHex = _lightColorHexArr[_random.Next(0, _lightColorHexArr.Length)];
+            var white = new Rgba32(255, 255, 255); // 创建白色
+
+            img.Mutate(ctx => ctx
+                    .Fill(ParseHexColor(_lightColorHexArr[_random.Next(0, _lightColorHexArr.Length)]))
+                    .Glow(ParseHexColor(lignthColorHex))
+                    .DrawingGrid(_imageWidth, _imageHeight, ParseHexColor(lignthColorHex), 5, 1)
+                    .DrawingCnText(_imageWidth, _imageHeight, text, ParseHexColor(colorTextHex), _textFont)
+                    .GaussianBlur(0.4f)
+                    .DrawingCircles(_imageWidth, _imageHeight, 15, _miniCircleR, _maxCircleR, white)
+                );
+
+            using (var ms = new MemoryStream())
             {
-                var colorTextHex = _colorHexArr[_random.Next(0, _colorHexArr.Length)];
-                var lignthColorHex = _lightColorHexArr[_random.Next(0, _lightColorHexArr.Length)];
-
-                img.Mutate(ctx => ctx
-                        .Fill(Rgba32.FromHex(_lightColorHexArr[_random.Next(0, _lightColorHexArr.Length)]))
-                        .Glow(Rgba32.FromHex(lignthColorHex))
-                        .DrawingGrid(_imageWidth, _imageHeight, Rgba32.FromHex(lignthColorHex), 5, 1)
-                        .DrawingEnText(_imageWidth, _imageHeight, text, _colorHexArr, _fontArr)
-                        .GaussianBlur(0.4f)
-                        .DrawingCircles(_imageWidth, _imageHeight, 15, _miniCircleR, _maxCircleR, Rgba32.White)
-                    );
-
-                using (var ms = new MemoryStream())
-                {
-                    img.Save(ms, PngFormat.Instance);
-                    return ms.ToArray();
-                }
+                img.Save(ms, PngFormat.Instance);
+                return ms.ToArray();
             }
         }
 
@@ -180,7 +195,7 @@ namespace DUWENINK.Captcha.Services
         /// <param name="fontSize">一个初始大小</param>
         private void initFonts(int fontSize)
         {
-            if (_fontArr == null)
+            if (_textFont == null)
             {
                 var fontDir = "./fonts";
                 var list = new List<Font>();
@@ -194,7 +209,7 @@ namespace DUWENINK.Captcha.Services
                     {
                         foreach (var ff in fontFiles)
                         {
-                            list.Add(new Font(fontCollection.Install(ff), fontSize));
+                            list.Add(new Font(fontCollection.Add(ff), fontSize));
                         }
                     }
                 }
@@ -202,7 +217,8 @@ namespace DUWENINK.Captcha.Services
                 {
                     throw new Exception($"绘制验证码字体文件不存在，请将字体文件(.ttf)复制到目录：{fontDir}");
                 }
-                _fontArr = list.ToArray();
+                _textFont = list.FirstOrDefault(c => "STCAIYUN".Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
+                _textFont ??= list[_random.Next(0, list.Count)];
             }
         }
 

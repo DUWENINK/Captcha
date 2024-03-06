@@ -24,16 +24,37 @@ namespace Demo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllersWithViews(); // 对于MVC项目
             services.AddMemoryCache();//使用缓存 
             services.AddDUWENINKCaptcha();//使用验证码
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseMvc();
-            app.UseMvcWithDefaultRoute();
+
+           // app.UsePathBase("Home/Index");
+
+            app.UseRouting();
+            // 添加一个中间件来处理根URL的访问
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path == "/")
+                {
+                    // 重定向到/Home/Index
+                    context.Response.Redirect("/Home/Index");
+                    return;
+                }
+                await next();
+            });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                // 添加其他端点配置
+            });
         }
     }
 }
