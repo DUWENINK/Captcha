@@ -46,9 +46,10 @@ Install-Package DUWENINK.Captcha
 ```
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddMemoryCache();//使用缓存 
-            services.AddDUWENINKCaptcha();//使用验证码
+              services.AddControllersWithViews(); // 对于MVC项目
+              services.AddMemoryCache();//使用缓存 
+              services.AddDUWENINKCaptcha();//使用验证码
+              services.AddControllersWithViews();
         }
 
 ```
