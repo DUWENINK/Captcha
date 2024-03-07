@@ -11,8 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DUWENINK.Captcha.Interfaces;
-using DUWENINK.Captcha.Services;
+using DUWENINK.Captcha;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

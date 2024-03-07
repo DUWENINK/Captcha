@@ -1,23 +1,32 @@
-﻿using SixLabors.Fonts;
-using SixLabors.ImageSharp;
+﻿/*----------------------------------------------------------------
+// Copyright © 2019 Chinairap.All rights reserved. 
+// CLR版本：	4.0.30319.42000
+// 类 名 称：    SecurityCodeDI
+// 文 件 名：    SecurityCodeDI
+// 创建者：      DUWENINK
+// 创建日期：	2019/8/2 11:52:28
+// 版本	日期					修改人	
+// v0.1	2019/8/2 11:52:28	DUWENINK
+//----------------------------------------------------------------*/
+using SixLabors.Fonts;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using System;
+using SixLabors.ImageSharp;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
+using System;
+using System.Linq;
 using DUWENINK.Captcha.Extensions;
-using DUWENINK.Captcha.Interfaces;
 using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Processing;
 
 namespace DUWENINK.Captcha
 {
     /// <summary>
     /// 验证码配置和逻辑
     /// </summary>
-    public class SecurityCodeHelper: ISecurityCodeHelper
+    public class SecurityCodeHelper : ISecurityCodeHelper
     {
         /// <summary>
         /// 验证码文本池
@@ -60,7 +69,7 @@ namespace DUWENINK.Captcha
 
         public SecurityCodeHelper()
         {
-             initFonts(_imageHeight);
+            initFonts(_imageHeight);
         }
 
         /// <summary>
@@ -118,7 +127,7 @@ namespace DUWENINK.Captcha
         public byte[] GetBubbleCodeByte(string text)
         {
             using Image<Rgba32> img = new(_imageWidth, _imageHeight);
-            
+
 
             var colorCircleHex = _colorHexArr[_random.Next(0, _colorHexArr.Length)];
             var colorTextHex = colorCircleHex;
@@ -195,43 +204,31 @@ namespace DUWENINK.Captcha
         /// <param name="fontSize">一个初始大小</param>
         private void initFonts(int fontSize)
         {
-            if (_textFont == null)
-            {
-                var sourceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,  "fonts");
-                if (Directory.Exists(sourceDir))
-                {
-                    var fontFiles = Directory.GetFiles(sourceDir, "*.ttf");
-                    foreach (var fontFile in fontFiles)
-                    {
-                        var targetFilePath = Path.Combine(targetDir, Path.GetFileName(fontFile));
-                        if (!File.Exists(targetFilePath))
-                        {
-                            File.Copy(fontFile, targetFilePath);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new Exception($"绘制验证码字体文件不存在，请将字体文件(.ttf)复制到目录：{fontDir}");
-                }
-                var list = new List<Font>();
-         
-                    var fontFiles = Directory.GetFiles(sourceDir, "*.ttf");                    
-                    var fontCollection = new FontCollection();
+            if (_textFont != null) return;
+            var list = new List<Font>();
 
-                    if (fontFiles?.Length > 0)
-                    {
-                        foreach (var ff in fontFiles)
-                        {
-                            list.Add(new Font(fontCollection.Add(ff), fontSize));
-                        }
-                    }
-            
-                _textFont = list.FirstOrDefault(c => "STCAIYUN".Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
-                _textFont ??= list[_random.Next(0, list.Count)];
+            var sourceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "fonts");
+            if (Directory.Exists(sourceDir))
+            {
+
+                var fontFiles = Directory.GetFiles(sourceDir, "*.ttf");
+                var fontCollection = new FontCollection();
+
+                if (fontFiles?.Length > 0)
+                {
+                    list.AddRange(fontFiles.Select(ff => new Font(fontCollection.Add(ff), fontSize)));
+                }
             }
+            else
+            {
+                throw new Exception($"绘制验证码字体文件不存在，请将字体文件(.ttf)复制到目录：{sourceDir}");
+            }
+
+               
+
+            _textFont = list.FirstOrDefault(c => "STCAIYUN".Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
+            _textFont ??= list[_random.Next(0, list.Count)];
         }
 
     }
 }
- 

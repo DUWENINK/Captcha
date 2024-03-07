@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DUWENINK.Captcha.Interfaces
+namespace DUWENINK.Captcha
 {
     /// <summary>
     /// 命名空间： DUWENINK.Captcha.Interfaces

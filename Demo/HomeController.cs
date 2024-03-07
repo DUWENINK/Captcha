@@ -1,7 +1,7 @@
 ﻿using System;
 using Demo.Dtos;
+using DUWENINK.Captcha;
 using Microsoft.AspNetCore.Mvc;
-using DUWENINK.Captcha.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Demo

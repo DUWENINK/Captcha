@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <Description>一个基于跨平台的验证码生成器工具，依赖注入后使用</Description>
     <Product>DUWENINK.Captcha</Product>
     <Copyright>DUWENINK</Copyright>
@@ -19,11 +19,51 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\SecurityCodeHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="fonts\Candara.ttf" />
+    <None Remove="fonts\impact.ttf" />
+    <None Remove="fonts\monbaiti.ttf" />
+    <None Remove="fonts\STCAIYUN.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Services\SecurityCodeHelper.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="fonts\Candara.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <Pack>true</Pack>
+	    <PackagePath>fonts\</PackagePath>
+    </Content>
+    <Content Include="fonts\impact.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <Pack>true</Pack>
+	    <PackagePath>fonts\</PackagePath>
+    </Content>
+    <Content Include="fonts\monbaiti.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <Pack>true</Pack>
+	    <PackagePath>fonts\</PackagePath>
+    </Content>
+    <Content Include="fonts\STCAIYUN.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <Pack>true</Pack>
+	    <PackagePath>fonts\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.3" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.2" />
     <None Include="docs\README.md" Pack="true" PackagePath="\" />
-    <None Include="LICENSE.txt" Pack="true" PackagePath=""/>
+    <None Include="LICENSE.txt" Pack="true" PackagePath="" />
 
   </ItemGroup>
 
