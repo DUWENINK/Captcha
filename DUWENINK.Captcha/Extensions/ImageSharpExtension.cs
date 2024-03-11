@@ -21,8 +21,8 @@ namespace DUWENINK.Captcha.Extensions
                 Random random = new();
                 var textWidth = (containerWidth / text.Length);
                 var img2Size = Math.Min(textWidth, containerHeight);
-                var fontMiniSize = (int)(img2Size * 0.6);
-                var fontMaxSize = (int)(img2Size * 0.95);
+                var fontMiniSize = (int)(img2Size * 1.2);
+                var fontMaxSize = (int)(img2Size *1.5);
 
                 for (int i = 0; i < text.Length; i++)
                 {

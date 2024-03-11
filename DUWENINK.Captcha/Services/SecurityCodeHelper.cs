@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DUWENINK.Captcha.Extensions;
-using DUWENINK.Captcha.Interfaces;
 using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace DUWENINK.Captcha
@@ -30,11 +29,12 @@ namespace DUWENINK.Captcha
         /// </summary>
         private readonly int _imageWidth = 120;
         private readonly int _imageHeight = 50;
+        private readonly int _fontHeight = 24;
 
         /// <summary>
         /// 泡泡数量
         /// </summary>
-        private int _circleCount = 13;
+        private int _circleCount = 10;
         /// <summary>
         /// 泡泡半径范围
         /// </summary>
@@ -60,7 +60,7 @@ namespace DUWENINK.Captcha
 
         public SecurityCodeHelper()
         {
-             initFonts(_imageHeight);
+            InitFonts(_fontHeight);
         }
 
         /// <summary>
@@ -70,15 +70,13 @@ namespace DUWENINK.Captcha
         /// <returns></returns>
         public string GetRandomCnText(int length)
         {
-            StringBuilder sb = new StringBuilder();
-            if (length > 0)
+            var sb = new StringBuilder();
+            if (length <= 0) return sb.ToString();
+            do
             {
-                do
-                {
-                    sb.Append(_cnTextArr[_random.Next(0, _cnTextArr.Length)]);
-                }
-                while (--length > 0);
+                sb.Append(_cnTextArr[_random.Next(0, _cnTextArr.Length)]);
             }
+            while (--length > 0);
             return sb.ToString();
         }
 
@@ -89,22 +87,20 @@ namespace DUWENINK.Captcha
         /// <returns></returns>
         public string GetRandomEnDigitalText(int length)
         {
-            StringBuilder sb = new StringBuilder();
-            if (length > 0)
+            var sb = new StringBuilder();
+            if (length <= 0) return sb.ToString();
+            do
             {
-                do
+                if (_random.Next(0, 2) > 0)
                 {
-                    if (_random.Next(0, 2) > 0)
-                    {
-                        sb.Append(_random.Next(2, 10));
-                    }
-                    else
-                    {
-                        sb.Append(_enTextArr[_random.Next(0, _enTextArr.Length)]);
-                    }
+                    sb.Append(_random.Next(2, 10));
                 }
-                while (--length > 0);
+                else
+                {
+                    sb.Append(_enTextArr[_random.Next(0, _enTextArr.Length)]);
+                }
             }
+            while (--length > 0);
             return sb.ToString();
         }
 
@@ -112,8 +108,6 @@ namespace DUWENINK.Captcha
         /// 获取泡泡样式验证码
         /// </summary>
         /// <param name="text">2-3个文字，中文效果较好</param>
-        /// <param name="width">验证码宽度，默认宽度100px，可根据传入</param>
-        /// <param name="format"></param>
         /// <returns>验证码图片字节数组</returns>
         public byte[] GetBubbleCodeByte(string text)
         {
@@ -147,9 +141,9 @@ namespace DUWENINK.Captcha
             hexColor = hexColor.TrimStart('#');
 
             // 解析R, G, B 值
-            byte r = Convert.ToByte(hexColor.Substring(0, 2), 16);
-            byte g = Convert.ToByte(hexColor.Substring(2, 2), 16);
-            byte b = Convert.ToByte(hexColor.Substring(4, 2), 16);
+            var r = Convert.ToByte(hexColor[..2], 16);
+            var g = Convert.ToByte(hexColor.Substring(2, 2), 16);
+            var b = Convert.ToByte(hexColor.Substring(4, 2), 16);
             byte a = 255; // 默认不透明
 
             // 如果提供了Alpha值，则解析Alpha值
@@ -178,58 +172,42 @@ namespace DUWENINK.Captcha
                     .Glow(ParseHexColor(lignthColorHex))
                     .DrawingGrid(_imageWidth, _imageHeight, ParseHexColor(lignthColorHex), 5, 1)
                     .DrawingCnText(_imageWidth, _imageHeight, text, ParseHexColor(colorTextHex), _textFont)
-                    .GaussianBlur(0.4f)
+                    .GaussianBlur(0.1f)
                     .DrawingCircles(_imageWidth, _imageHeight, 15, _miniCircleR, _maxCircleR, white)
                 );
 
-            using (var ms = new MemoryStream())
-            {
-                img.Save(ms, PngFormat.Instance);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            img.Save(ms, PngFormat.Instance);
+            return ms.ToArray();
+
+
+      
         }
 
         /// <summary>
         /// 初始化字体池
         /// </summary>
         /// <param name="fontSize">一个初始大小</param>
-        private void initFonts(int fontSize)
+        private static void InitFonts(int fontSize)
         {
-            if (_textFont == null)
-            {
-                var sourceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,  "fonts");
-                if (Directory.Exists(sourceDir))
-                {
-                    var fontFiles = Directory.GetFiles(sourceDir, "*.ttf");
-                    foreach (var fontFile in fontFiles)
-                    {
-                        var targetFilePath = Path.Combine(targetDir, Path.GetFileName(fontFile));
-                        if (!File.Exists(targetFilePath))
-                        {
-                            File.Copy(fontFile, targetFilePath);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new Exception($"绘制验证码字体文件不存在，请将字体文件(.ttf)复制到目录：{fontDir}");
-                }
-                var list = new List<Font>();
-         
-                    var fontFiles = Directory.GetFiles(sourceDir, "*.ttf");                    
-                    var fontCollection = new FontCollection();
+            if (_textFont != null) return;
+            var list = new List<Font>();
 
-                    if (fontFiles?.Length > 0)
-                    {
-                        foreach (var ff in fontFiles)
-                        {
-                            list.Add(new Font(fontCollection.Add(ff), fontSize));
-                        }
-                    }
-            
-                _textFont = list.FirstOrDefault(c => "STCAIYUN".Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
-                _textFont ??= list[_random.Next(0, list.Count)];
+            var sourceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,  "fonts");
+            if (Directory.Exists(sourceDir))
+            {
+                var fontFiles = Directory.GetFiles(sourceDir, "*.ttf");
+                list.AddRange(from fontFile in fontFiles let fontCollection = new FontCollection() select new Font(fontCollection.Add(fontFile), fontSize));
             }
+            else
+            {
+                throw new Exception($"绘制验证码字体文件不存在，请将字体文件(.ttf)复制到目录：{sourceDir}");
+            }
+         
+
+            
+            _textFont = list.FirstOrDefault(c => "STCAIYUN".Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
+            _textFont ??= list[_random.Next(0, list.Count)];
         }
 
     }
