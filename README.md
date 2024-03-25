@@ -1,5 +1,4 @@
 
-# 项目基于 [Hei.Captcha](https://github.com/gebiWangshushu/Hei.Captcha) 为 [Hei.Captcha](https://github.com/gebiWangshushu/Hei.Captcha) 的依赖注入版本
 
 # 示例
 
