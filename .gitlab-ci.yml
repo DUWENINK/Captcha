@@ -1,0 +1,34 @@
+image: mcr.microsoft.com/dotnet/sdk:9.0
+
+stages:
+  - build
+  - pack
+  - publish
+
+variables:
+  PROJECT_PATH: "DUWENINK.Captcha/DUWENINK.Captcha.csproj"
+
+build:
+  stage: build
+  script:
+    - dotnet restore
+    - dotnet build --configuration Release
+  only:
+    - tags
+
+pack:
+  stage: pack
+  script:
+    - dotnet pack $PROJECT_PATH --configuration Release /p:Version=${CI_COMMIT_TAG} --output ./nupkg
+  artifacts:
+    paths:
+      - ./nupkg/*.nupkg
+  only:
+    - tags
+
+publish:
+  stage: publish
+  script:
+    - dotnet nuget push ./nupkg/*.nupkg --source "${NUGET_SOURCE}" --api-key "${NUGET_API_KEY}" --skip-duplicate
+  only:
+    - tags
