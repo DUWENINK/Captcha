@@ -201,7 +201,18 @@ namespace DUWENINK.Captcha
             }
             else
             {
-                throw new Exception($"绘制验证码字体文件不存在，请将字体文件(.ttf)复制到目录：{sourceDir}");
+                //尝试读取嵌入资源
+                var assembly = typeof(SecurityCodeHelper).Assembly;
+                var resourceNames = assembly.GetManifestResourceNames();
+                foreach (var resourceName in resourceNames)
+                {
+                    if (!resourceName.EndsWith(".ttf")) continue;
+                    using var stream = assembly.GetManifestResourceStream(resourceName);
+                    if (stream == null) continue;
+                    var fontCollection = new FontCollection();
+                    list.Add(new Font(fontCollection.Add(stream), fontSize));
+                }
+                //throw new Exception($"绘制验证码字体文件不存在，请将字体文件(.ttf)复制到目录：{sourceDir}");
             }
          
 
