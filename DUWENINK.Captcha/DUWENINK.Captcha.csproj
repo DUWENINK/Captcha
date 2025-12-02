@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Version>0.8.0</Version>
     <Description>一个基于跨平台的验证码生成器工具，依赖注入后使用</Description>
     <Product>DUWENINK.Captcha</Product>
@@ -56,9 +56,9 @@
   </ItemGroup>
 
   <ItemGroup>
- <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
+ <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
     <None Include="docs\README.md" Pack="true" PackagePath="\" />
     <None Include="LICENSE.txt" Pack="true" PackagePath="" />
 
